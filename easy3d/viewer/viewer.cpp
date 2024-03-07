@@ -768,18 +768,29 @@ namespace easy3d {
             is_animating_ = !is_animating_;
             if (is_animating_ && !animation_func_)
                 LOG(WARNING) << "animation is enabled but the animation function (i.e., animation_func_) is missing";
-        }
-        else if (key == GLFW_KEY_LEFT && modifiers == 0) {
-            auto angle = static_cast<float>(1 * M_PI / 180.0); // turn left, 1 degrees each step
-            camera_->frame()->action_turn(angle, camera_);
+        } else if (key == GLFW_KEY_LEFT && modifiers == 0) {
+            vec3 pt = camera_->sceneCenter();
+            camera_->frame()->action_rotate(pt.x, pt.y, -10, 0, camera_, ManipulatedFrame::VERTICAL);
         } else if (key == GLFW_KEY_RIGHT && modifiers == 0) {
-            auto angle = static_cast<float>(1 * M_PI / 180.0); // turn right, 1 degrees each step
-            camera_->frame()->action_turn(-angle, camera_);
+            vec3 pt = camera_->sceneCenter();
+            camera_->frame()->action_rotate(pt.x, pt.y, 10, 0, camera_, ManipulatedFrame::VERTICAL);
+        } else if (key == GLFW_KEY_LEFT && modifiers == MODIF_ALT) {
+            vec3 pt = camera_->sceneCenter();
+            camera_->frame()->action_rotate(pt.x, pt.y, -250, 0, camera_, ManipulatedFrame::VERTICAL);
+        } else if (key == GLFW_KEY_RIGHT && modifiers == MODIF_ALT) {
+            vec3 pt = camera_->sceneCenter();
+            camera_->frame()->action_rotate(pt.x, pt.y, 250, 0, camera_, ManipulatedFrame::VERTICAL);
         } else if (key == GLFW_KEY_UP && modifiers == 0) {    // move camera forward
             float step = 0.05f * camera_->sceneRadius();
             camera_->frame()->translate(camera_->frame()->inverseTransformOf(vec3(0.0, 0.0, -step)));
         } else if (key == GLFW_KEY_DOWN && modifiers == 0) {// move camera backward
             float step = 0.05f * camera_->sceneRadius();
+            camera_->frame()->translate(camera_->frame()->inverseTransformOf(vec3(0.0, 0.0, step)));
+        } else if (key == GLFW_KEY_UP && modifiers == MODIF_ALT) {    // move camera forward
+            float step = 0.5f * camera_->sceneRadius();
+            camera_->frame()->translate(camera_->frame()->inverseTransformOf(vec3(0.0, 0.0, -step)));
+        } else if (key == GLFW_KEY_DOWN && modifiers == MODIF_ALT) {// move camera backward
+            float step = 0.5f * camera_->sceneRadius();
             camera_->frame()->translate(camera_->frame()->inverseTransformOf(vec3(0.0, 0.0, step)));
         } else if (key == GLFW_KEY_LEFT && modifiers == MODIF_CTRL) {    // move camera left
             float step = 0.05f * camera_->sceneRadius();
@@ -1013,6 +1024,8 @@ namespace easy3d {
         } else if (key == GLFW_KEY_S && modifiers == 0) {
             snapshot();
         } else if (key == GLFW_KEY_F4 && modifiers == GLFW_MOD_ALT) {
+            glfwSetWindowShouldClose(window_, true);
+        } else if (key == GLFW_KEY_ESCAPE) {
             glfwSetWindowShouldClose(window_, true);
         }
         else
